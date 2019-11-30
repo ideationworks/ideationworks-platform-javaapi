@@ -1,0 +1,139 @@
+version: '3.7'
+
+services:
+
+  #
+  # Modules
+  #
+
+  #
+  #  RabbitMQ (Message Broker)
+  #
+  rabbitmq:
+    image:          "rabbitmq:3-management"
+    container_name: "ideationworks-rabbitmq"
+    hostname:       "rabbitmq"
+    restart:        always
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER:  "rabbitmq"
+      RABBITMQ_DEFAULT_PASS:  "agaeq14"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - ideationworks
+
+  #
+  #  MySQL (Relational Database)
+  #
+  mysql:
+    image: "mysql:5.7"
+    container_name: "ideationworks-mysql"
+    hostname: "mysql"
+    volumes:
+      - ideationworks-mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+      MYSQL_DATABASE: ideationworks
+    ports:
+      - 3306:3306
+    networks:
+      - ideationworks
+
+  #
+  #  Elasticsearch (Document Data Storage)
+  #
+  elasticsearch:
+    image:          docker.elastic.co/elasticsearch/elasticsearch:7.3.2
+    container_name: "ideationworks-elasticsearch"
+    hostname:       "elasticsearch"
+    restart:        always
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      node.name:                    "elasticsearch"
+      ES_JAVA_OPTS:                 "-Xmx256m -Xms256m"
+      discovery-type:               "single-node"
+      cluster.initial_master_nodes: "elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ideationworks-elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - ideationworks
+
+  #
+  #  Kibana (Elasticsearch Dashboard)
+  #
+  kibana:
+    image:          docker.elastic.co/kibana/kibana:7.3.2
+    container_name: "ideationworks-kibana"
+    hostname:       "kibana"
+    restart:        always
+    ports:
+      - "5601:5601"
+    networks:
+      - ideationworks
+    depends_on:
+      - elasticsearch
+
+  #
+  #  Jaeger (for tracing)
+  #
+  jaeger:
+    image:          jaegertracing/all-in-one:latest
+    container_name: "ideationworks-jaeger"
+    hostname:       "jaeger"
+    restart:        always
+    environment:
+      SPAN_STORAGE_TYPE: "elasticsearch"
+      ES_SERVER_URLS:    "http://elasticsearch:9200"
+    ports:
+      - "6831:6831/udp" # Thrift Protocol
+      - "16686:16686"   # Web Frontend
+    networks:
+      - ideationworks
+    depends_on:
+      - elasticsearch
+
+  #
+  #  Influxdb (Monitoring Metrics Store)
+  #
+  influxdb:
+    image:          influxdb:latest
+    container_name: "ideationworks-influxdb"
+    hostname:       "influxdb"
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    volumes:
+      - ideationworks-influxdb:/var/lib/influxdb
+    networks:
+      - ideationworks
+
+#
+# Internal Networks
+#
+networks:
+  ideationworks:
+
+#
+# Storage Volumes
+#
+volumes:
+  ideationworks-mysql:
+  ideationworks-elasticsearch:
+  ideationworks-redis:
+  ideationworks-influxdb:
+

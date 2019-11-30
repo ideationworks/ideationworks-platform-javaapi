@@ -1,0 +1,116 @@
+buildscript {
+
+    repositories {
+
+        jcenter()
+
+    }
+
+    dependencies {
+
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+
+    }
+
+}
+
+plugins {
+
+    id 'org.springframework.boot' version '2.1.7.RELEASE'
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'com.bmuschko.nexus'
+
+group = 'ideationworks'
+version = '0.0.1'
+
+configurations {
+
+    compileOnly {
+
+        extendsFrom annotationProcessor
+
+    }
+
+}
+
+repositories {
+
+
+    maven {
+
+//        credentials {
+//
+//            username System.getenv('NEXUS_USERNAME') ?: "$nexusUsername"
+//            password System.getenv('NEXUS_PASSWORD') ?: "$nexusPassword"
+//
+//        }
+
+        url 'https://nexus.matthewdavis.io/repository/spring.black'
+
+    }
+
+    mavenCentral()
+    jcenter()
+
+    maven {
+
+        url 'https://repo.spring.io/libs-snapshot'
+
+    }
+
+
+}
+
+bootJar {
+
+    enabled = false
+
+}
+
+jar {
+
+    enabled = true
+
+}
+//
+//nexus {
+//
+//    sign = false
+//
+//    repositoryUrl = System.getenv('NEXUS_BASE') ?: "$nexusBase"
+//    snapshotRepositoryUrl = System.getenv('NEXUS_BASE') ?: "$nexusBase" + "/nexus/content/repositories/snapshots/"
+//
+//}
+
+dependencies {
+
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    implementation group: 'spring.black', name: 'categories', version: '0.0.1'
+    implementation group: 'spring.black', name: 'common', version: '0.0.1'
+    implementation group: 'spring.black', name: 'identity', version: '0.0.2'
+    implementation group: 'spring.black', name: 'security', version: '0.0.2'
+    implementation group: 'spring.black', name: 'tags', version: '0.0.5'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testng:testng:7.0.0'
+
+}

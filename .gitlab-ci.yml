@@ -1,0 +1,60 @@
+image: docker:latest
+
+services:
+
+  - docker:18.09.7-dind
+
+before_script:
+
+  - apk add --no-cache python py-pip
+  - pip install awscli
+
+stages:
+
+  - build
+  - deploy
+
+variables:
+
+  IMAGE: "$PROD_ECR_BASE_URI/$CI_PROJECT_NAME:$CI_COMMIT_SHA"
+  MYSQL_HOST: "$PROD_MYSQL_HOST"
+  MYSQL_USER: "$PROD_MYSQL_USER"
+  MYSQL_PASS: "$PROD_MYSQL_PASS"
+  MYSQL_DATABASE: "ideationworks"
+
+build-production:
+
+  stage: build
+
+  script:
+
+    - $(aws ecr get-login --no-include-email --region $PROD_AWS_REGION)
+    - docker build -t "$IMAGE" .
+    - docker push "$IMAGE"
+
+  only:
+
+    - master
+
+
+deploy-production:
+
+  stage: deploy
+
+  image: mateothegreat/docker-alpine-gcloud-kubectl
+
+  only:
+    - master
+
+  script:
+    - kubectl config set-cluster kube-cluster --server="$PROD_K8_URL" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials gitlab --token="$PROD_K8_TOKEN"
+    - kubectl config set-context default-context --cluster=kube-cluster --user=gitlab
+    - kubectl config use-context default-context
+    - apk --update add git
+    - git submodule update --init
+    - make install
+
+  environment:
+    name: production
+    url: https://ideation.works

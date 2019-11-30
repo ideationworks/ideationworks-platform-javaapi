@@ -1,0 +1,27 @@
+[submodule "modules/ideationworks-platform-api-attachments"]
+	path = modules/ideationworks-platform-api-attachments
+	url = git@github.com:ideationworks/ideationworks-platform-api-attachments.git
+[submodule "modules/ideationworks-platform-api-categories"]
+	path = modules/ideationworks-platform-api-categories
+	url = git@github.com:ideationworks/ideationworks-platform-api-categories.git
+[submodule "modules/ideationworks-platform-api-common"]
+	path = modules/ideationworks-platform-api-common
+	url = git@github.com:ideationworks/ideationworks-platform-api-common.git
+[submodule "modules/ideationworks-platform-api-ideas"]
+	path = modules/ideationworks-platform-api-ideas
+	url = git@github.com:ideationworks/ideationworks-platform-api-ideas.git
+[submodule "modules/ideationworks-platform-api-logging"]
+	path = modules/ideationworks-platform-api-logging
+	url = git@github.com:ideationworks/ideationworks-platform-api-logging.git
+[submodule "modules/ideationworks-platform-api-organizations"]
+	path = modules/ideationworks-platform-api-organizations
+	url = git@github.com:ideationworks/ideationworks-platform-api-organizations.git
+[submodule "modules/ideationworks-platform-api-security"]
+	path = modules/ideationworks-platform-api-security
+	url = git@github.com:ideationworks/ideationworks-platform-api-security.git
+[submodule "modules/ideationworks-platform-api-tags"]
+	path = modules/ideationworks-platform-api-tags
+	url = git@github.com:ideationworks/ideationworks-platform-api-tags.git
+[submodule "modules/ideationworks-platform-api-tasks"]
+	path = modules/ideationworks-platform-api-tasks
+	url = git@github.com:ideationworks/ideationworks-platform-api-tasks.git
