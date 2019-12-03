@@ -1,24 +1,14 @@
 image: docker:latest
 
 services:
+
   - docker:dind
 
 stages:
+
   - build
   - package
   - deploy
-
-gradle-build:
-  image: java:8-jdk
-  stage: build
-  only:
-    - master
-  #  tags:
-  #    - k8
-  script: "./gradlew build"
-  artifacts:
-    paths:
-      - build/libs/*.jar
 
 docker-build:
 
