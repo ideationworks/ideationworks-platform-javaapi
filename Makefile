@@ -2,7 +2,7 @@ include .make/Makefile.inc
 
 VERSION			= $(shell git rev-parse HEAD)
 APP     		?= ideationworks-platform-api
-IMAGE			?= registry.gitlab.com/ideation.works/backend/$(APP)
+IMAGE			?= registry.gitlab.com/ideation.works/backend/$(APP):$(VERSION)
 NS				?= default
 PORT			?= 8080
 DEBUG			?= false
