@@ -20,6 +20,8 @@ spec:
       labels:
         app: $APP
     spec:
+      imagePullSecrets:
+        - name: docker-registry-ideationworks
       containers:
         - image: $IMAGE
           name: $APP
