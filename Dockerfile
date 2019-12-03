@@ -14,8 +14,8 @@ RUN ls -lah build/libs
 #
 # runtime environment
 #
-FROM openjdk:8-jre-alpine
+FROM mateothegreat/docker-alpine-gradle-jre11
 
-COPY --from=builder /build/build/libs/build-0.0.3.jar /application.jar
+COPY --from=builder /build/build/libs/ideationworks-0.0.1.jar /application.jar
 
 CMD [ "java", "-jar", "/application.jar" ]

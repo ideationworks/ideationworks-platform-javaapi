@@ -25,3 +25,6 @@
 [submodule "modules/ideationworks-platform-api-tasks"]
 	path = modules/ideationworks-platform-api-tasks
 	url = git@github.com:ideationworks/ideationworks-platform-api-tasks.git
+[submodule ".make"]
+	path = .make
+	url = https://github.com/mateothegreat/.make
