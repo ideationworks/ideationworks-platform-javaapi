@@ -22,7 +22,7 @@ public interface IdeaTagsRepository extends PagingAndSortingRepository<IdeaTag, 
             "                                                                       " +
             "INNER JOIN ideas i ON i.id = t.idea_id                                 " +
             "                                                                       " +
-            "WHERE t.tag_id IN :tags")
+            "WHERE t.tag_id IN :tags", nativeQuery = true)
     Page<Idea> _getByTagIds(@Param("tags") List<UUID> tags, Pageable pageable);
 
 }

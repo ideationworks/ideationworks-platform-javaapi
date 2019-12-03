@@ -6,20 +6,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import springblack.categories.CategoriesService;
+import springblack.categories.Category;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class IdeaCategorysService {
+public class IdeaCategoriesService {
 
     private final IdeaCategoriesRepository ideaCategoriesRepository;
     private final CategoriesService        categoriesService;
 
     @Autowired
-    public IdeaCategorysService(final IdeaCategoriesRepository ideaCategoriesRepository,
-                                final CategoriesService categoriesService) {
+    public IdeaCategoriesService(final IdeaCategoriesRepository ideaCategoriesRepository,
+                                 final CategoriesService categoriesService) {
 
         this.ideaCategoriesRepository = ideaCategoriesRepository;
         this.categoriesService = categoriesService;
@@ -40,4 +41,11 @@ public class IdeaCategorysService {
 
     }
 
+    public IdeaCategory create(Idea idea, Category category) {
+
+        return ideaCategoriesRepository.save(new IdeaCategory(idea, category));
+
+    }
+
 }
+

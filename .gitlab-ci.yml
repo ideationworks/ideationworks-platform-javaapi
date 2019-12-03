@@ -1,60 +1,62 @@
 image: docker:latest
 
 services:
-
-  - docker:18.09.7-dind
-
-before_script:
-
-  - apk add --no-cache python py-pip
-  - pip install awscli
+  - docker:dind
 
 stages:
-
   - build
+  - package
   - deploy
 
-variables:
-
-  IMAGE: "$PROD_ECR_BASE_URI/$CI_PROJECT_NAME:$CI_COMMIT_SHA"
-  MYSQL_HOST: "$PROD_MYSQL_HOST"
-  MYSQL_USER: "$PROD_MYSQL_USER"
-  MYSQL_PASS: "$PROD_MYSQL_PASS"
-  MYSQL_DATABASE: "ideationworks"
-
-build-production:
-
+gradle-build:
+  image: java:8-jdk
   stage: build
+  only:
+    - master
+  #  tags:
+  #    - k8
+  script: "./gradlew build"
+  artifacts:
+    paths:
+      - build/libs/*.jar
+
+docker-build:
+
+  stage: package
+  #  tags:
+  #    - k8
+  only:
+    - master
 
   script:
 
-    - $(aws ecr get-login --no-include-email --region $PROD_AWS_REGION)
-    - docker build -t "$IMAGE" .
-    - docker push "$IMAGE"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
 
-  only:
-
-    - master
-
-
-deploy-production:
+deploy-master:
 
   stage: deploy
 
   image: mateothegreat/docker-alpine-gcloud-kubectl
 
   only:
+
     - master
 
+  variables:
+
+    MYSQL_HOST: "$PROD_MYSQL_HOST"
+    MYSQL_USER: "$PROD_MYSQL_USER"
+    MYSQL_PASS: "$PROD_MYSQL_PASS"
+    MYSQL_DATABASE: "ideationworks"
+
   script:
-    - kubectl config set-cluster kube-cluster --server="$PROD_K8_URL" --insecure-skip-tls-verify=true
-    - kubectl config set-credentials gitlab --token="$PROD_K8_TOKEN"
+
+    - kubectl config set-cluster kube-cluster --server="$K8_PROD_API_URL" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials gitlab --token="$K8_PROD_TOKEN"
     - kubectl config set-context default-context --cluster=kube-cluster --user=gitlab
     - kubectl config use-context default-context
     - apk --update add git
     - git submodule update --init
     - make install
-
-  environment:
-    name: production
-    url: https://ideation.works

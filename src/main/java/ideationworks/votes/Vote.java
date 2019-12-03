@@ -1,22 +1,20 @@
-package ideationworks.ideas.categories;
+package ideationworks.votes;
 
 import ideationworks.ideas.Idea;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import springblack.categories.Category;
+import springblack.identity.users.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@NoArgsConstructor
 @Data
 @Entity
-@Table(name = "ideas_categories")
-public class IdeaCategory {
+@Table(name = "Vote")
+public class Vote {
 
     @Id
     @GeneratedValue(generator = "uuid")
@@ -31,16 +29,11 @@ public class IdeaCategory {
     private LocalDateTime stampUpdated;
 
     @OneToOne
-    private Idea idea;
+    private User user;
 
     @OneToOne
-    private Category category;
+    private Idea idea;
 
-    public IdeaCategory(Idea idea, Category category) {
-
-        this.idea = idea;
-        this.category = category;
-
-    }
+    private VoteType type;
 
 }

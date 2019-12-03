@@ -42,15 +42,7 @@ configurations {
 
 repositories {
 
-
     maven {
-
-//        credentials {
-//
-//            username System.getenv('NEXUS_USERNAME') ?: "$nexusUsername"
-//            password System.getenv('NEXUS_PASSWORD') ?: "$nexusPassword"
-//
-//        }
 
         url 'https://nexus.matthewdavis.io/repository/spring.black'
 
@@ -64,7 +56,6 @@ repositories {
         url 'https://repo.spring.io/libs-snapshot'
 
     }
-
 
 }
 
@@ -93,7 +84,7 @@ dependencies {
 
     runtimeOnly 'mysql:mysql-connector-java'
 
-    implementation group: 'spring.black', name: 'categories', version: '0.0.1'
+    implementation group: 'spring.black', name: 'categories', version: '0.0.9'
     implementation group: 'spring.black', name: 'common', version: '0.0.1'
     implementation group: 'spring.black', name: 'identity', version: '0.0.2'
     implementation group: 'spring.black', name: 'security', version: '0.0.2'

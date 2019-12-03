@@ -21,7 +21,7 @@ public interface IdeaCategoriesRepository extends PagingAndSortingRepository<Ide
             "                                                                       " +
             "INNER JOIN ideas i ON i.id = t.idea_id                                 " +
             "                                                                       " +
-            "WHERE t.category_id IN :categoryIds")
+            "WHERE t.category_id IN :categoryIds", nativeQuery = true)
     Page<Idea> _getByTagCategoryIds(@Param("categoryIds") List<UUID> categoryIds, Pageable pageable);
 
 }

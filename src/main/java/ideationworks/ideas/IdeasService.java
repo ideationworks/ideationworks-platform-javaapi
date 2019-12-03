@@ -1,5 +1,7 @@
 package ideationworks.ideas;
 
+import ideationworks.ideas.categories.IdeaCategoriesService;
+import ideationworks.ideas.objects.IdeaCreate;
 import ideationworks.ideas.objects.IdeaUser;
 import ideationworks.ideas.tags.IdeaTagsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,33 +21,61 @@ import java.util.UUID;
 @Service
 public class IdeasService {
 
-    private final IdeasRepository   ideasRepository;
-    private final UsersService      usersService;
-    private final CategoriesService categoriesService;
-    private final TagsService       tagsService;
-    private final IdeaTagsService   ideaTagsService;
+    private final IdeasRepository       ideasRepository;
+    private final UsersService          usersService;
+    private final CategoriesService     categoriesService;
+    private final IdeaCategoriesService ideaCategoriesService;
+    private final TagsService           tagsService;
+    private final IdeaTagsService       ideaTagsService;
 
     @Autowired
     public IdeasService(final IdeasRepository ideasRepository,
                         final UsersService usersService,
                         final CategoriesService categoriesService,
                         final TagsService tagsService,
+                        final IdeaCategoriesService ideaCategoriesService,
                         final IdeaTagsService ideaTagsService) {
 
         this.ideasRepository = ideasRepository;
         this.usersService = usersService;
+        this.ideaCategoriesService = ideaCategoriesService;
         this.categoriesService = categoriesService;
         this.tagsService = tagsService;
         this.ideaTagsService = ideaTagsService;
 
     }
 
-    public Idea create(Idea idea, Principal principal) {
+    public Idea create(IdeaCreate ideaCreate, Principal principal) {
+
+        Idea idea = new Idea();
 
         idea.setOrganization(usersService.getByPrincipal(principal).getOrganization());
         idea.setUser(usersService.getByPrincipal(principal));
 
-        return ideasRepository.save(idea);
+        Idea entity = ideasRepository.save(idea);
+
+        ideaCreate.getCategories().forEach(category -> {
+
+            ideaCategoriesService.create(entity, categoriesService.getById(category));
+
+        });
+
+        return idea;
+
+    }
+
+    /**
+     * Retrieve an idea by it's unique identifier.
+     *
+     * @param id Unique identiifer (UUIDv4)
+     *
+     * @return Returns the corresponding idea.
+     *
+     * @throws ResourceNotFoundException Throws when idea could not be located.
+     */
+    public Idea getById(UUID id) {
+
+        return ideasRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("could not locate Idea"));
 
     }
 
@@ -75,13 +105,13 @@ public class IdeasService {
 
     }
 
-    public Page<Idea> getByCategories(List<String> categories, Pageable pageable) {
+//    public Page<Idea> getByCategories(List<String> categories, Pageable pageable) {
+//
+//        return ideasRepository.getByCategory(categoriesService.getByName(categoryName), pageable);
+//
+//    }
 
-        return ideasRepository.getByCategory(categoriesService.getByName(categoryName), pageable);
-
-    }
-
-    public Page<Idea> getByTags(List<String> tagNames, Pageable pageable) {
+    public Page<Idea> search(String terms, List<String> tagNames, List<String> categoryNames, Pageable pageable) {
 
         List<UUID> tagIds = new ArrayList<>();
 
